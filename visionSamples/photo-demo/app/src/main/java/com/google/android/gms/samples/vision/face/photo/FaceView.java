@@ -43,7 +43,7 @@ public class FaceView extends View {
     /**
      * Sets the bitmap background and the associated face detections.
      */
-    void setContent(Bitmap bitmap, SparseArray<Face> faces) {
+    public void setContent(Bitmap bitmap, SparseArray<Face> faces) {
         mBitmap = bitmap;
         mFaces = faces;
         invalidate();
@@ -87,16 +87,60 @@ public class FaceView extends View {
      */
     private void drawFaceAnnotations(Canvas canvas, double scale) {
         Paint paint = new Paint();
-        paint.setColor(Color.GREEN);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(5);
 
         for (int i = 0; i < mFaces.size(); ++i) {
             Face face = mFaces.valueAt(i);
             for (Landmark landmark : face.getLandmarks()) {
+
+                paint.setColor(Color.GREEN);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(5);
+
                 int cx = (int) (landmark.getPosition().x * scale);
                 int cy = (int) (landmark.getPosition().y * scale);
-                canvas.drawCircle(cx, cy, 10, paint);
+
+                // Left eye
+                if (landmark.getType() == Landmark.LEFT_EYE) {
+                    // Closed
+                    if (face.getIsLeftEyeOpenProbability() < .4) {
+                        paint.setColor(Color.RED);
+                        canvas.drawCircle(cx, cy, 10, paint);
+                    }
+
+                    // Open
+                    else {
+                        paint.setColor(Color.WHITE);
+                        paint.setStyle(Paint.Style.FILL);
+                        canvas.drawCircle(cx, cy, 60, paint);
+
+                        paint.setColor(Color.BLACK);
+                        canvas.drawCircle(cx, cy, 10, paint);
+                    }
+                }
+
+                // Right eye
+                else if (landmark.getType() == Landmark.RIGHT_EYE) {
+                    // Closed
+                    if (face.getIsRightEyeOpenProbability() < .4) {
+                        paint.setColor(Color.RED);
+                        canvas.drawCircle(cx, cy, 10, paint);
+                    }
+                    // Open
+                    else {
+                        paint.setColor(Color.WHITE);
+                        paint.setStyle(Paint.Style.FILL);
+                        canvas.drawCircle(cx, cy, 60, paint);
+
+                        paint.setColor(Color.BLACK);
+                        canvas.drawCircle(cx, cy, 10, paint);
+                    }
+                }
+
+                // Everything else in green
+                else {
+                    paint.setColor(Color.GREEN);
+                    canvas.drawCircle(cx, cy, 10, paint);
+                }
             }
         }
     }
