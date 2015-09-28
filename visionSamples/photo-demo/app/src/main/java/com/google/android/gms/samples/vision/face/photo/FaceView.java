@@ -90,6 +90,17 @@ public class FaceView extends View {
 
         for (int i = 0; i < mFaces.size(); ++i) {
             Face face = mFaces.valueAt(i);
+
+            int fx = (int) (face.getPosition().x * scale);
+            int fy = (int) (face.getPosition().y * scale);
+            int fw = (int) (face.getWidth() * scale);
+            int fh = (int) (face.getHeight() * scale);
+
+            paint.setColor(Color.MAGENTA);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(5);
+            canvas.drawRect(fx, fy, fx + fw, fy + fh, paint);
+
             for (Landmark landmark : face.getLandmarks()) {
 
                 paint.setColor(Color.GREEN);
